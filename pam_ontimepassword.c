@@ -52,6 +52,39 @@ char *conjunt[]=
 "Hoh+i9kohtiek7M"  //23
 };
 
+#define COUNT_FORTUNE 2
+char *fortune[]=
+{
+	"A veces veo errores",
+	"El kernel s'ha espantat",
+	"Vigila amb l'ornitorring, si t'atrapa et convertira en un objecte",
+	"li treus tota la serietat al projecte",
+	"solo veo una pantalla con printf's en ella.",
+	"Sois programadores hard",
+	"HARi was HERE",
+	"I want to believe",
+	"a q te meto un troyano q ja veras",
+	"fes-ho o no ho fagis, pero no ho intentis -- El mestre ioda",
+	"Envieu-nos diners o ens morirem de gana",
+	"el conocimiento humano petenece al mundo",
+	"no lo entiendes steven? eso NO importa",
+	"el bien de la mayoria es superior al bien de la minoria i al de uno solo -- Spock",
+	"fem que la historia no oblidi mai el nom de enterprise",
+	"los buenos pintores copian, los genios roban",
+	"jo no nomes reinventare la roda, sino que quan acabi la patentare",
+	"com tots sabeu java es un invent de hp",
+	"nomes es per provocar",
+	"tal com Microsoft diu: la culpa es del hardware",
+	"vull tancar el #operacion_trueno i vull fer un bat que quan s'executi una imatge robi el passwords pq un troyano ja se aniria a 1 mega i no colaria",
+	"es que aixo del c es un llenguatge lent, En java es un lleguatge rapid -- MagBox",
+	"A pero a la maquina senzilla no es poden fer MUL? -- Logann",
+	"Com vols que els caixes automatics estiguin connectats a la xarxa -- R00TD0WN",
+	"esq amb l'imici ja em surt una finestra qui la hobre encare q no escrigui res",
+	"Avui he canivat el logo de windows, soc un Hacker -- TvKeeper",
+	"talk root@alei.upf.es -- Xev",
+	"M'ha arribat el teu text amb una colla de caracters inutils. Cal que m'enviis el text en format Word."
+};
+
 static void paminfo(pam_handle_t *pamh, char *fmt, ...);
 static void pamvprompt(pam_handle_t *pamh, int style, char **resp, char *fmt, va_list ap);
 
