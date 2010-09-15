@@ -181,7 +181,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
   if (ret != PAM_SUCCESS) 
 	{
     syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, hora, conjunt[idx]);
-    sleep(3); /* Irritation! */
+    //sleep(3); /* Irritation! */
   }
 	else 
     syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, hora, conjunt[idx]);
