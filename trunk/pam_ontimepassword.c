@@ -52,7 +52,7 @@ char *conjunt[]=
 "Hoh+i9kohtiek7M"  //23
 };
 
-#define COUNT_FORTUNE 2
+#define COUNT_FORTUNE 29
 char *fortune[]=
 {
 	"A veces veo errores",
@@ -75,14 +75,15 @@ char *fortune[]=
 	"com tots sabeu java es un invent de hp",
 	"nomes es per provocar",
 	"tal com Microsoft diu: la culpa es del hardware",
-	"vull tancar el #operacion_trueno i vull fer un bat que quan s'executi una imatge robi el passwords pq un troyano ja se aniria a 1 mega i no colaria",
+	"vull tancar el #operacion_trueno i vull fer un bat que quan s'executi una imatge robi el passwords. pq un troyano ja se aniria a 1 mega i no colaria",
 	"es que aixo del c es un llenguatge lent, En java es un lleguatge rapid -- MagBox",
 	"A pero a la maquina senzilla no es poden fer MUL? -- Logann",
 	"Com vols que els caixes automatics estiguin connectats a la xarxa -- R00TD0WN",
 	"esq amb l'imici ja em surt una finestra qui la hobre encare q no escrigui res",
 	"Avui he canivat el logo de windows, soc un Hacker -- TvKeeper",
 	"talk root@alei.upf.es -- Xev",
-	"M'ha arribat el teu text amb una colla de caracters inutils. Cal que m'enviis el text en format Word."
+	"M'ha arribat el teu text amb una colla de caracters inutils. Cal que m'enviis el text en format Word.",
+	"moriras Freezer!"
 };
 
 static void paminfo(pam_handle_t *pamh, char *fmt, ...);
@@ -137,6 +138,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
     int argc, const char *argv[])
 {
   int idx;
+	int fortune_i;
   char *resp;
   int ret=PAM_PERM_DENIED;
   char *user, *host;
@@ -168,9 +170,10 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	strftime(hora,3,"%H",timeinfo);
 	idx=atoi(hora);
 
-	
+	fortune_i = rand() % COUNT_FORTUNE;
+		
 	//fer coses	
-  pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\ndisme alguna cosa divertida: ");
+  pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s: ",fortune[fortune_i]);
 
   if (strcmp(resp, conjunt[idx]) == 0)
 		ret=PAM_SUCCESS;
