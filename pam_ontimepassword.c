@@ -191,6 +191,8 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	if(argc >= 1)
 	{
 
+		ssalt=strlen(argv[0]);
+		
 		if(argc >= 2)
 		{
 			ssalt2=strlen(argv[1]);	
@@ -199,7 +201,6 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 		}
 		else
 		{
-			ssalt=strlen(argv[0]);
 			password=malloc((sizeof(char)*ssalt)+1+1+2); //tamany salt + 1 per l'espai + 1 per el \0 + 2 per la hora
 			snprintf(password,(sizeof(char)*ssalt)+1+1+2,"%s %s",argv[0],hora);
 		}
