@@ -25,6 +25,8 @@
 #define PAM_EXTERN
 #endif
 
+//#define _LOG_HASH_
+
 //pels sosos
 //#define _FORTUNE_JORDI_
 
@@ -202,30 +204,44 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 
 	//fer coses	
 
-#ifdef _FORTUNE_JORDI_	
+	#ifdef _FORTUNE_JORDI_	
 
-	fortune_i = rand() % COUNT_FORTUNE;
-  pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
+		fortune_i = rand() % COUNT_FORTUNE;
+		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
 
-#else
+	#else
 
-	pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "what time is it?: ");
+		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "what time is it?: ");
 	
-#endif
+	#endif
 
   if (strcmp(resp, md5) == 0)
 		ret=PAM_SUCCESS;
 
   if (ret != PAM_SUCCESS) 
 	{
-    syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, password, md5);
-    #warning sense sleep!!!
-    //sleep(3); /* Irritation! */
+	
+		#ifdef _LOG_HASH_
+			syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, password, md5);
+		#else
+			syslog(LOG_INFO, "User %s failed to pass the on time password (from %s)",user, host);
+		#endif
 		
-		paminfo(pamh,"");
+   	//#warning sense sleep!!!
+   	sleep(3); /* Irritation! */
+		
+		paminfo(pamh,"There must be some kind of way out of here\n");
   }
 	else 
-    syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, password, md5);
+	{
+		#ifdef _LOG_HASH_
+			syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, password, md5);
+		#else
+			syslog(LOG_INFO, "User %s passed the on time password (from %s)", user, host);
+		#endif
+
+		paminfo(pamh,"Said the joker to the thief\n");
+	}
 
 	//temporal
 	//ret=PAM_SUCCESS;
