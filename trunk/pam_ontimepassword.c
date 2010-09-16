@@ -52,7 +52,7 @@ char *conjunt[]=
 "Hoh+i9kohtiek7M"  //23
 };
 
-#define COUNT_FORTUNE 29
+#define COUNT_FORTUNE 30
 char *fortune[]=
 {
 	"A veces veo errores",
@@ -83,7 +83,8 @@ char *fortune[]=
 	"Avui he canivat el logo de windows, soc un Hacker -- TvKeeper",
 	"talk root@alei.upf.es -- Xev",
 	"M'ha arribat el teu text amb una colla de caracters inutils. Cal que m'enviis el text en format Word.",
-	"moriras Freezer!"
+	"moriras Freezer!",
+	"no es el mateix un client blanc que un client negre"
 };
 
 static void paminfo(pam_handle_t *pamh, char *fmt, ...);
