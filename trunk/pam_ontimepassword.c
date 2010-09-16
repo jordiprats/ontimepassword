@@ -19,6 +19,8 @@
 #include <security/pam_modules.h>
 #include <security/pam_appl.h>
 
+#include "md5.h"
+
 #ifndef PAM_EXTERN
 #define PAM_EXTERN
 #endif
@@ -134,6 +136,33 @@ static void paminfo(pam_handle_t *pamh, char *fmt, ...) {
   va_end(ap);
 }
 
+/* Computes the message digest for string inString.
+ * Prints out message digest, a space, the string (in quotes) and a
+ * carriage return.
+ */
+
+char* MD5string (char *inString)
+{
+	char *md5=NULL;
+	MD5_CTX mdContext;
+	unsigned int len = strlen (inString);
+	int i=0;
+
+	MD5Init (&mdContext);
+	MD5Update (&mdContext, inString, len);
+	MD5Final (&mdContext);
+	
+	md5=malloc(1+(sizeof(char)*2*16));
+
+  for (i = 0; i < 16; i++)
+    snprintf (md5+(i*2), 3, "%02x", mdContext.digest[i]);
+	
+	//*(md5+16*2+1)=0;
+
+	return md5;	
+}
+
+
 PAM_EXTERN int
 pam_sm_authenticate(pam_handle_t *pamh, int flags,
     int argc, const char *argv[])
@@ -172,10 +201,15 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	idx=atoi(hora);
 
 	fortune_i = rand() % COUNT_FORTUNE;
-		
-	//fer coses	
-  pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s: ",fortune[fortune_i]);
 
+	char *md5=MD5string(hora);
+
+	//fer coses	
+  pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
+
+	//allibero el md5 al acabar
+	free(md5);
+	
   if (strcmp(resp, conjunt[idx]) == 0)
 		ret=PAM_SUCCESS;
 
