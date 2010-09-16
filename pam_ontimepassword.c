@@ -25,34 +25,10 @@
 #define PAM_EXTERN
 #endif
 
-#define TOTAL_CHALLENGES 24
-char *conjunt[]=
-{ 
-"faiT|e7phei7wao", //00
-"aip_ai^chieM7ah", //01
-"aht=ah3Puch$ae7", //02
-"xae&Ngei4kah9za", //03
-"Kohh,aej,aesai4", //04
-"utie}xua9Vooyo^", //05
-"aih4ohDaiboo$ch", //06
-"oobie3choh<T$ie", //07
-"ega4ohch$e9jieF", //08
-"Ec$eishohe9uuch", //09
-"Zies[ai$Pheih7i", //10
-"Roh3eethei<vee4", //11
-"Ac7yoh4xaey/e$w", //12
-"pe!o$rai@chah4Z", //13
-"pomaB,ua4Keem3i", //14
-"peeJ3ae$b=oQuae", //15
-"ahsoo4so?B3ooda", //16
-"quaca$ehizie3iB", //17 
-"itee:Keb7zeph3u", //18
-"phee7Ofo[e9aiPh", //19
-"fei7ieToyoo=gh7", //20
-"que&gha3She4hai", //21
-"zio<y3tieNg,eeb", //22
-"Hoh+i9kohtiek7M"  //23
-};
+//pels sosos
+#define _FORTUNE_JORDI_
+
+#ifdef _FORTUNE_JORDI_
 
 #define COUNT_FORTUNE 30
 char *fortune[]=
@@ -88,6 +64,8 @@ char *fortune[]=
 	"moriras Freezer!",
 	"no es el mateix un client blanc que un client negre"
 };
+
+#endif
 
 static void paminfo(pam_handle_t *pamh, char *fmt, ...);
 static void pamvprompt(pam_handle_t *pamh, int style, char **resp, char *fmt, va_list ap);
@@ -168,7 +146,9 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
     int argc, const char *argv[])
 {
   int idx;
+#ifdef _FORTUNE_JORDI_
 	int fortune_i;
+#endif
   char *resp;
   int ret=PAM_PERM_DENIED;
   char *user, *host;
@@ -200,29 +180,38 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	strftime(hora,3,"%H",timeinfo);
 	idx=atoi(hora);
 
-	fortune_i = rand() % COUNT_FORTUNE;
-
 	char *md5=MD5string(hora);
 
 	//fer coses	
+
+#ifdef _FORTUNE_JORDI_	
+
+	fortune_i = rand() % COUNT_FORTUNE;
   pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
 
-	//allibero el md5 al acabar
-	free(md5);
+#else
+
+	pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\nwhat time is it?: ");
 	
-  if (strcmp(resp, conjunt[idx]) == 0)
+#endif
+
+  if (strcmp(resp, md5) == 0)
 		ret=PAM_SUCCESS;
 
   if (ret != PAM_SUCCESS) 
 	{
-    syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, hora, conjunt[idx]);
+    syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, hora, md5);
     //sleep(3); /* Irritation! */
+    #warning sense sleep!!!
   }
 	else 
-    syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, hora, conjunt[idx]);
+    syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, hora, md5);
 
 	//temporal
 	//ret=PAM_SUCCESS;
+	
+	//allibero el md5 al acabar
+	free(md5);
 
   closelog();
 	free(resp);
