@@ -25,12 +25,14 @@
 #define PAM_EXTERN
 #endif
 
+//per debug
 //#define _LOG_HASH_
 
 //pels sosos
 //#define _FORTUNE_JORDI_
 
-#define _STEALTH_MODE_
+//disimular
+//#define _STEALTH_MODE_
 
 #ifdef _FORTUNE_JORDI_
 
@@ -205,7 +207,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	#ifdef _FORTUNE_JORDI_	
 
 		fortune_i = rand() % COUNT_FORTUNE;
-		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
+		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s: ", fortune[fortune_i]);
 
 	#else
 		
