@@ -30,6 +30,8 @@
 //pels sosos
 //#define _FORTUNE_JORDI_
 
+#define _STEALTH_MODE_
+
 #ifdef _FORTUNE_JORDI_
 
 #define COUNT_FORTUNE 30
@@ -69,7 +71,6 @@ char *fortune[]=
 
 #endif
 
-static void paminfo(pam_handle_t *pamh, char *fmt, ...);
 static void pamvprompt(pam_handle_t *pamh, int style, char **resp, char *fmt, va_list ap);
 
 static void pamprompt(pam_handle_t *pamh, int style, char **resp, char *fmt, ...) {/*{{{*/
@@ -109,6 +110,10 @@ static void pamvprompt(pam_handle_t *pamh, int style, char **resp, char *fmt, va
   free(text);
 }/*}}}*/
 
+#if defined(_FORTUNE_JORDI_) || ! defined(_STEALTH_MODE_)
+
+static void paminfo(pam_handle_t *pamh, char *fmt, ...);
+
 static void paminfo(pam_handle_t *pamh, char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
@@ -116,10 +121,7 @@ static void paminfo(pam_handle_t *pamh, char *fmt, ...) {
   va_end(ap);
 }
 
-/* Computes the message digest for string inString.
- * Prints out message digest, a space, the string (in quotes) and a
- * carriage return.
- */
+#endif
 
 char* MD5string (char *inString)
 {
@@ -137,8 +139,6 @@ char* MD5string (char *inString)
   for (i = 0; i < 16; i++)
     snprintf (md5+(i*2), 3, "%02x", mdContext.digest[i]);
 	
-	//*(md5+16*2+1)=0;
-
 	return md5;	
 }
 
@@ -164,14 +164,12 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
   pam_get_item(pamh, PAM_USER, (const void **)&user);
   pam_get_item(pamh, PAM_RHOST, (const void **)&host);
 
-  srand(time(NULL)); /* XXX: Should we seed by something less predictable? */
-
   /* XXX: Uncomment this to have the screen cleared before proceeding */
   //paminfo(pamh, "[2J[0;0H");
 
-  //si es el user de OTP:
-
 #ifdef _FORTUNE_JORDI_
+
+	srand(time(NULL)); /* XXX: Should we seed by something less predictable? */
 
   paminfo(pamh, " Necesitaras algo mes que un password de res per entrar aqui");
   paminfo(pamh, "-------------------------------------------------------------\n");
@@ -210,8 +208,12 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\n%s - %s: ", md5, fortune[fortune_i]);
 
 	#else
-
-		pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "what time is it?: ");
+		
+		#ifdef _STEALTH_MODE_
+			pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "Password: ");
+		#else
+			pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "what time is it?: ");
+		#endif
 	
 	#endif
 
@@ -229,8 +231,10 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 		
    	//#warning sense sleep!!!
    	sleep(3); /* Irritation! */
-		
-		paminfo(pamh,"There must be some kind of way out of here\n");
+	
+		#ifndef _STEALTH_MODE_	
+			paminfo(pamh,"There must be some kind of way out of here\n");
+		#endif
   }
 	else 
 	{
@@ -239,8 +243,10 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 		#else
 			syslog(LOG_INFO, "User %s passed the on time password (from %s)", user, host);
 		#endif
-
-		paminfo(pamh,"Said the joker to the thief\n");
+		
+		#ifndef _STEALTH_MODE_
+			paminfo(pamh,"Said the joker to the thief\n");
+		#endif
 	}
 
 	//temporal
