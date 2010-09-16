@@ -161,7 +161,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	struct tm * timeinfo;
 	char hora[3];
 	char *password;
-	int ssalt=0;
+	int ssalt=0,ssalt2=0;
 
   pam_get_item(pamh, PAM_USER, (const void **)&user);
   pam_get_item(pamh, PAM_RHOST, (const void **)&host);
@@ -190,13 +190,23 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 
 	if(argc >= 1)
 	{
-		ssalt=strlen(argv[0]);
-		password=malloc((sizeof(char)*ssalt)+1+1+2); //tamany salt + 1 per l'espai + 1 per el \0 + 2 per la hora
-		snprintf(password,(sizeof(char)*ssalt)+1+1+2,"%s %s",argv[0],hora);
+
+		if(argc >= 2)
+		{
+			ssalt2=strlen(argv[1]);	
+			password=malloc((sizeof(char)*ssalt)+1+2+1+(sizeof(char)*ssalt2)+1); //tamany salt + 1 per l'espai + 2 per la hora + 1 per l'espai + tamany salt2
+			snprintf(password,(sizeof(char)*ssalt)+1+2+1+(sizeof(char)*ssalt2)+1,"%s %s %s", argv[0], hora, argv[1]);
+		}
+		else
+		{
+			ssalt=strlen(argv[0]);
+			password=malloc((sizeof(char)*ssalt)+1+1+2); //tamany salt + 1 per l'espai + 1 per el \0 + 2 per la hora
+			snprintf(password,(sizeof(char)*ssalt)+1+1+2,"%s %s",argv[0],hora);
+		}
 	}
 	else
 	{
-		password=malloc(18*sizeof(char)); // $ echo "systemadmin.es 10" | wc -c; 18
+		password=malloc(29*sizeof(char)); // echo "systemadmin.es 13 jordiprats" | wc -c; 29
 		snprintf(password,18*sizeof(char),"systemadmin.es %s",hora);
 	}
 		
