@@ -26,7 +26,7 @@
 #endif
 
 //pels sosos
-#define _FORTUNE_JORDI_
+//#define _FORTUNE_JORDI_
 
 #ifdef _FORTUNE_JORDI_
 
@@ -156,6 +156,8 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	time_t rawtime;
 	struct tm * timeinfo;
 	char hora[3];
+	char *password;
+	int ssalt=0;
 
   pam_get_item(pamh, PAM_USER, (const void **)&user);
   pam_get_item(pamh, PAM_RHOST, (const void **)&host);
@@ -167,8 +169,12 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 
   //si es el user de OTP:
 
+#ifdef _FORTUNE_JORDI_
+
   paminfo(pamh, " Necesitaras algo mes que un password de res per entrar aqui");
   paminfo(pamh, "-------------------------------------------------------------\n");
+
+#endif
 
   openlog("pam_ontimepassword", 0, LOG_AUTHPRIV);
 
@@ -180,7 +186,19 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	strftime(hora,3,"%H",timeinfo);
 	idx=atoi(hora);
 
-	char *md5=MD5string(hora);
+	if(argc >= 1)
+	{
+		ssalt=strlen(argv[0]);
+		password=malloc((sizeof(char)*ssalt)+1+1+2); //tamany salt + 1 per l'espai + 1 per el \0 + 2 per la hora
+		snprintf(password,(sizeof(char)*ssalt)+1+1+2,"%s %s",argv[0],hora);
+	}
+	else
+	{
+		password=malloc(18*sizeof(char)); // $ echo "systemadmin.es 10" | wc -c; 18
+		snprintf(password,18*sizeof(char),"systemadmin.es %s",hora);
+	}
+		
+	char *md5=MD5string(password);
 
 	//fer coses	
 
@@ -191,7 +209,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 
 #else
 
-	pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "\nwhat time is it?: ");
+	pamprompt(pamh, PAM_PROMPT_ECHO_OFF, &resp, "what time is it?: ");
 	
 #endif
 
@@ -200,18 +218,20 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 
   if (ret != PAM_SUCCESS) 
 	{
-    syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, hora, md5);
-    //sleep(3); /* Irritation! */
+    syslog(LOG_INFO, "User %s failed to pass the on time password (from %s) - %s: %s", user, host, password, md5);
     #warning sense sleep!!!
+    //sleep(3); /* Irritation! */
+		
+		paminfo(pamh,"");
   }
 	else 
-    syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, hora, md5);
+    syslog(LOG_INFO, "User %s passed the on time password (from %s) - %s: %s", user, host, password, md5);
 
 	//temporal
 	//ret=PAM_SUCCESS;
 	
-	//allibero el md5 al acabar
-	free(md5);
+	//allibero el md5 i password al acabar
+	free(md5); free(password);
 
   closelog();
 	free(resp);
