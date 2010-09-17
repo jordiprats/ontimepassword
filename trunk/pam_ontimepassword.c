@@ -207,8 +207,8 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
 	}
 	else
 	{
-		password=malloc(29*sizeof(char)); // echo "systemadmin.es 13 jordiprats" | wc -c; 29
-		snprintf(password,18*sizeof(char),"systemadmin.es %s",hora);
+		password=malloc(33*sizeof(char)); //echo "systemadmin.es 13 6,693*10^–11" | wc -c; 33
+		snprintf(password,33*sizeof(char),"systemadmin.es %s 6,693*10^–11",hora);
 	}
 		
 	char *md5=MD5string(password);
