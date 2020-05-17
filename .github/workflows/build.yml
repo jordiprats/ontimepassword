@@ -13,6 +13,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: apt-update
+      run: sudo apt-get update
+
+    - name: dependencies
+      run: sudo apt-get install libpam0g-dev -y
+
     - name: stealth
       run: make stealth
 
